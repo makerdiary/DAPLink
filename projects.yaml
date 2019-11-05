@@ -39,7 +39,7 @@ module:
         - records/daplink/target_board.yaml
     # HICs
     hic_k20dx: &module_hic_k20dx
-        - records/rtos/rtos-cm3.yaml
+        - records/rtos/rtos-cm4.yaml
         - records/hic_hal/k20dx.yaml
         - records/usb/usb-bulk.yaml
     hic_k26f: &module_hic_k26f
