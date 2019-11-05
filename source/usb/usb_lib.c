@@ -2342,7 +2342,7 @@ U8 USBD_ConfigDescriptor_HS[200] = { 0 };
   struct {                              \
     U8  len;                            \
     U8  type;                           \
-    U16 str[sizeof(USBD_##n)/2-1];      \
+    wchar_t str[sizeof(USBD_##n)/2-1];      \
   } desc##n
 
 #define USBD_STR_VAL(n)                  \
