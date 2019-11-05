@@ -1,6 +1,5 @@
 /**
- * @file    error.c
- * @brief   Implementation of error.h
+ * @file    dap_strings.h
  *
  * DAPLink Interface Firmware
  * Copyright (c) 2019, ARM Limited, All Rights Reserved
@@ -48,5 +47,16 @@ __STATIC_INLINE uint8_t DAP_GetSerNumString (char *str) {
     const char * data = info_get_unique_id();
     uint8_t length = (uint8_t)strlen(data) + 1;
     memcpy(str, data, length);
-    return length
+    return length;
+}
+
+/** Get firmware version string.
+\param str Pointer to buffer to store the string.
+\return String length.
+*/
+__STATIC_INLINE uint8_t DAP_GetFirmwareVersionString (char *str) {
+    const char * data = info_get_version();
+    uint8_t length = (uint8_t)strlen(data) + 1;
+    memcpy(str, data, length);
+    return length;
 }
