@@ -18,7 +18,10 @@ tool_specific:
                 - Wall
                 - ffunction-sections
                 - fdata-sections
+                - -std=c99
+                - -fshort-wchar
             linker_options:
                 - nostartfiles
+                - --no-wchar-size-warning
 
 
