@@ -25,7 +25,7 @@
 #include "cortex_m.h"
 
 
-static void fault_handler(uint32_t _lr)
+void _fault_handler(uint32_t _lr)
 {
 //hexdump logic on hardfault
     uint32_t stk_ptr;
@@ -78,6 +78,6 @@ void HardFault_Handler()
 {
     asm volatile (
         "    mov    r0, lr\n"
-        "    bl     fault_handler\n"
+        "    bl     _fault_handler\n"
     );
 }
