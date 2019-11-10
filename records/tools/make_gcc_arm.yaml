@@ -22,6 +22,8 @@ tool_specific:
                 - -fshort-wchar
                 - -fno-common
                 - -ffreestanding
+                - -Wa,-adln=$@.lst
+                - -fverbose-asm
             ld_flags:
                 - -Wl,--no-wchar-size-warning
                 - --specs=nano.specs
