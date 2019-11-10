@@ -1,6 +1,6 @@
 /**
  * @file    daplink_addr.h
- * @brief   
+ * @brief
  *
  * DAPLink Interface Firmware
  * Copyright (c) 2009-2016, ARM Limited, All Rights Reserved
@@ -78,5 +78,9 @@
 #error "Build must be either bootloader or interface"
 
 #endif
+
+// GCC LD include files
+#define DAPLINK_LD_MEMORY_INC "k20dx_ld_memory.inc"
+#define DAPLINK_LD_EARLY_INC "k20dx_ld_early.inc"
 
 #endif
