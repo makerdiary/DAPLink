@@ -2,20 +2,29 @@ common:
     macros:
         - OS_TICK=10000
     includes:
-        - source/rtos
+        - mbed-os/rtos/TARGET_CORTEX/rtx5/Include/
+        - mbed-os/rtos/TARGET_CORTEX/rtx5/RTX/Include/
     sources:
         rtos:
-            - source/rtos/cm0
-            - source/rtos/rt_Event.c
-            - source/rtos/rt_List.c
-            - source/rtos/rt_Mailbox.c
-            - source/rtos/rt_MemBox.c
-            - source/rtos/rt_Mutex.c
-            - source/rtos/rt_Robin.c
-            - source/rtos/rt_Semaphore.c
-            - source/rtos/rt_System.c
-            - source/rtos/rt_Task.c
-            - source/rtos/rt_Time.c
-            - source/rtos/rt_Timer.c
-            - source/rtos/RTX_Config.c
-            - source/rtos/cmsis_os2_port.c
+            - mbed-os/rtos/TARGET_CORTEX/rtx5/RTX/Config/RTX_Config.c
+            - mbed-os/rtos/TARGET_CORTEX/rtx5/RTX/Source/rtx_delay.c
+            - mbed-os/rtos/TARGET_CORTEX/rtx5/RTX/Source/rtx_kernel.c
+            - mbed-os/rtos/TARGET_CORTEX/rtx5/RTX/Source/rtx_lib.c
+            - mbed-os/rtos/TARGET_CORTEX/rtx5/RTX/Source/rtx_memory.c
+            - mbed-os/rtos/TARGET_CORTEX/rtx5/RTX/Source/rtx_mempool.c
+            - mbed-os/rtos/TARGET_CORTEX/rtx5/RTX/Source/rtx_msgqueue.c
+            - mbed-os/rtos/TARGET_CORTEX/rtx5/RTX/Source/rtx_mutex.c
+            - mbed-os/rtos/TARGET_CORTEX/rtx5/RTX/Source/rtx_system.c
+            - mbed-os/rtos/TARGET_CORTEX/rtx5/RTX/Source/rtx_thread.c
+            - mbed-os/rtos/TARGET_CORTEX/rtx5/RTX/Source/rtx_timer.c
+            - mbed-os/rtos/TARGET_CORTEX/rtx5/Source/os_systick.c
+
+tool_specific:
+    uvision:
+        sources:
+            rtos:
+                - mbed-os/rtos/TARGET_CORTEX/rtx5/RTX/Source/TOOLCHAIN_ARM/TARGET_RTOS_M0/
+    make_armcc:
+        sources:
+            rtos:
+                - mbed-os/rtos/TARGET_CORTEX/rtx5/RTX/Source/TOOLCHAIN_GCC/TARGET_RTOS_M0/
