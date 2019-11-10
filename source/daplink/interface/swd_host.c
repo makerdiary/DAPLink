@@ -46,6 +46,12 @@
 #define MAX_SWD_RETRY 100//10
 #define MAX_TIMEOUT   1000000  // Timeout for syscalls on target
 
+// Use the CMSIS-Core definition if available.
+#if !defined(SCB_AIRCR_PRIGROUP_Pos)
+#define SCB_AIRCR_PRIGROUP_Pos              8U                                            /*!< SCB AIRCR: PRIGROUP Position */
+#define SCB_AIRCR_PRIGROUP_Msk             (7UL << SCB_AIRCR_PRIGROUP_Pos)                /*!< SCB AIRCR: PRIGROUP Mask */
+#endif
+
 typedef struct {
     uint32_t select;
     uint32_t csw;
