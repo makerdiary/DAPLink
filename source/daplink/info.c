@@ -101,22 +101,9 @@ const char *info_get_unique_id_string_descriptor(void)
     return usb_desc_unique_id;
 }
 
-//prevent the compiler to optimize boad and family id
-#if (defined(__ICCARM__))
-#pragma optimize = none
-static void setup_basics(void)
-#elif (defined(__CC_ARM))
-#pragma push
-#pragma O0
-static void setup_basics(void)
-#elif (defined(__GNUC__))
-/* #pragma GCC push_options */
-/* #pragma GCC optimize("O0") */
-static void __attribute__((optimize("O0"))) setup_basics(void)
-#else
-#error "Unknown compiler"
-#endif
-
+//prevent the compiler to optimize board and family id
+NO_OPTIMIZE_PRE
+static void NO_OPTIMIZE_INLINE setup_basics(void)
 {
     uint8_t i = 0, idx = 0;
     uint16_t family_id = get_family_id();
@@ -175,6 +162,7 @@ static void __attribute__((optimize("O0"))) setup_basics(void)
     string_version[idx++] = '0' + (DAPLINK_VERSION / 1) % 10;
     string_version[idx++] = 0;
 }
+NO_OPTIMIZE_POST
 
 static void setup_unique_id()
 {

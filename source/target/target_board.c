@@ -21,6 +21,7 @@
 
 #include "string.h"
 #include "target_board.h"
+#include "compiler.h"
 
 // Default empty board info.
 __attribute__((weak))
@@ -51,27 +52,10 @@ uint16_t get_family_id(void)
     }
 }
 
-#if (defined(__ICCARM__))
-#pragma optimize = none
-uint8_t flash_algo_valid(void)
-#elif (defined(__CC_ARM))
-#pragma push
-#pragma O0
-uint8_t flash_algo_valid(void)
-#elif (defined(__GNUC__))
-/* #pragma GCC push_options */
-/* #pragma GCC optimize("O0") */
-uint8_t __attribute__((optimize("O0"))) flash_algo_valid(void)
-#else
-#error "Unknown compiler"
-#endif
+// Disable optimization of this function.
+NO_OPTIMIZE_PRE
+uint8_t NO_OPTIMIZE_INLINE flash_algo_valid(void)
 {
     return (g_board_info.target_cfg != 0);
 }
-
-#if (defined(__CC_ARM))
-#pragma pop
-#endif
-#if (defined(__GNUC__))
-/* #pragma GCC pop_options */
-#endif
+NO_OPTIMIZE_POST
