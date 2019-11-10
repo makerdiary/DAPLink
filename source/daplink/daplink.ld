@@ -1,57 +1,26 @@
-/*
-** ###################################################################
-**     Processors:          MK22FX512AVLH12
-**                          MK22FX512AVLK12
-**                          MK22FX512AVLL12
-**                          MK22FX512AVLQ12
-**                          MK22FX512AVMC12
-**                          MK22FX512AVMD12
-**
-**     Compiler:            GNU C Compiler
-**     Reference manual:    K22P144M120SF5V2RM, Rev.5, March 2015
-**     Version:             rev. 1.0, 2015-04-07
-**     Build:               b170817
-**
-**     Abstract:
-**         Linker file for the GNU C Compiler
-**
-**     The Clear BSD License
-**     Copyright 2016 Freescale Semiconductor, Inc.
-**     Copyright 2016-2017 NXP
-**     All rights reserved.
-**
-**     Redistribution and use in source and binary forms, with or without modification,
-**     are permitted (subject to the limitations in the disclaimer below) provided
-**      that the following conditions are met:
-**
-**     1. Redistributions of source code must retain the above copyright notice, this list
-**       of conditions and the following disclaimer.
-**
-**     2. Redistributions in binary form must reproduce the above copyright notice, this
-**       list of conditions and the following disclaimer in the documentation and/or
-**       other materials provided with the distribution.
-**
-**     3. Neither the name of the copyright holder nor the names of its
-**       contributors may be used to endorse or promote products derived from this
-**       software without specific prior written permission.
-**
-**     NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS LICENSE.
-**     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-**     ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-**     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-**     DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-**     ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-**     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-**     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-**     ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-**     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-**     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-**
-**     http:                 www.nxp.com
-**     mail:                 support@nxp.com
-**
-** ###################################################################
-*/
+/**
+ * @file    daplink.ld
+ * @brief
+ *
+ * DAPLink Interface Firmware
+ * Copyright 2016 Freescale Semiconductor, Inc.
+ * Copyright 2016-2017 NXP
+ * Copyright (c) 2019, ARM Limited
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #include "daplink_addr.h"
 
 /* Entry Point */
@@ -67,7 +36,6 @@ MEMORY
   m_flash_config        (RX)  : ORIGIN = DAPLINK_ROM_APP_START + 0x00000400, LENGTH = 0x00000010
   m_text                (RX)  : ORIGIN = DAPLINK_ROM_APP_START + 0x00000410, LENGTH = DAPLINK_ROM_APP_SIZE - 0x410
   m_data                (RW)  : ORIGIN = DAPLINK_RAM_APP_START, LENGTH = DAPLINK_RAM_APP_SIZE
-//  m_data_2              (RW)  : ORIGIN = 0x20000000, LENGTH = 0x00010000
 }
 
 /* Define output sections */
@@ -226,12 +194,12 @@ SECTIONS
   } > m_data
 
   /* Initializes stack on the end of block */
-  __StackTop   = ORIGIN(m_data_2) + LENGTH(m_data_2);
+  __StackTop   = ORIGIN(m_data) + LENGTH(m_data);
   __StackLimit = __StackTop - STACK_SIZE;
   PROVIDE(__stack = __StackTop);
 
   .ARM.attributes 0 : { *(.ARM.attributes) }
 
-  ASSERT(__StackLimit >= __HeapLimit, "region m_data_2 overflowed with stack and heap")
+  ASSERT(__StackLimit >= __HeapLimit, "region m_data overflowed with stack and heap")
 }
 

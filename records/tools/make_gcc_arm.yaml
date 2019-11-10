@@ -4,8 +4,8 @@ tool_specific:
             - cortex-m0
         macros:
             -
-#         linker_file:
-#             - source/daplink/daplink.ld
+        linker_file:
+            - source/daplink/daplink.ld
         misc:
             libraries:
                 - m
