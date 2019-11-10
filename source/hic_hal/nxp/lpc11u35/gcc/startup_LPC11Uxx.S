@@ -32,21 +32,21 @@ __isr_vector:
     .long   Reset_Handler                                   /* Reset Handler */
     .long   NMI_Handler                                     /* NMI Handler*/
     .long   HardFault_Handler                               /* Hard Fault Handler*/
-    .long   MemManage_Handler                               /* MPU Fault Handler*/
-    .long   BusFault_Handler                                /* Bus Fault Handler*/
-    .long   UsageFault_Handler                              /* Usage Fault Handler*/
+    .long   0
+    .long   0
+    .long   0
     .long   0                                               /* Reserved*/
     .long   DAPLINK_BUILD_KEY                               /* Build type - BL/IF*/
     .long   DAPLINK_HIC_ID                                  /* Compatibility*/
     .long   DAPLINK_VERSION                                 /* Version*/
     .long   SVC_Handler                                     /* SVCall Handler*/
-    .long   DebugMon_Handler                                /* Debug Monitor Handler*/
+    .long   0
     .long   g_board_info                                    /* Ptr to Board info, family info other target details*/
     .long   PendSV_Handler                                  /* PendSV Handler*/
     .long   SysTick_Handler                                 /* SysTick Handler*/
 
     /* 32 External Interrupts*/
-    .long   FLEX_INT0_IRQHandler      ; All GPIO pin can be routed to FLEX_INTx
+    .long   FLEX_INT0_IRQHandler      /* All GPIO pin can be routed to FLEX_INTx */
     .long   FLEX_INT1_IRQHandler
     .long   FLEX_INT2_IRQHandler
     .long   FLEX_INT3_IRQHandler
@@ -55,51 +55,51 @@ __isr_vector:
     .long   FLEX_INT6_IRQHandler
     .long   FLEX_INT7_IRQHandler
     .long   GINT0_IRQHandler
-    .long   GINT1_IRQHandler          ; PIO0 (0:7)
-    .long   Reserved_IRQHandler		  ; Reserved
-    .long   Reserved_IRQHandler
-    .long   Reserved_IRQHandler
-    .long   Reserved_IRQHandler
-    .long   SSP1_IRQHandler           ; SSP1
-    .long   I2C_IRQHandler            ; I2C
-    .long   TIMER16_0_IRQHandler      ; 16-bit Timer0
-    .long   TIMER16_1_IRQHandler      ; 16-bit Timer1
-    .long   TIMER32_0_IRQHandler      ; 32-bit Timer0
-    .long   TIMER32_1_IRQHandler      ; 32-bit Timer1
-    .long   SSP0_IRQHandler           ; SSP0
-    .long   UART_IRQHandler           ; UART
-    .long   USB_IRQHandler            ; USB IRQ
-    .long   USB_FIQHandler            ; USB FIQ
-    .long   ADC_IRQHandler            ; A/D Converter
-    .long   WDT_IRQHandler            ; Watchdog timer
-    .long   BOD_IRQHandler            ; Brown Out Detect
-    .long   FMC_IRQHandler            ; IP2111 Flash Memory Controller
-    .long   Reserved_IRQHandler	       ; Reserved
-    .long   Reserved_IRQHandler       ; Reserved
-    .long   USBWakeup_IRQHandler      ; USB wake up
-    .long   Reserved_IRQHandler       ; Reserved
+    .long   GINT1_IRQHandler          /* PIO0 (0:7) */
+    .long   Reserved1_IRQHandler		   /* Reserved */
+    .long   Reserved2_IRQHandler
+    .long   Reserved3_IRQHandler
+    .long   Reserved4_IRQHandler
+    .long   SSP1_IRQHandler           /* SSP1 */
+    .long   I2C_IRQHandler            /* I2C */
+    .long   TIMER16_0_IRQHandler      /* 16-bit Timer0 */
+    .long   TIMER16_1_IRQHandler      /* 16-bit Timer1 */
+    .long   TIMER32_0_IRQHandler      /* 32-bit Timer0 */
+    .long   TIMER32_1_IRQHandler      /* 32-bit Timer1 */
+    .long   SSP0_IRQHandler           /* SSP0 */
+    .long   UART_IRQHandler           /* UART */
+    .long   USB_IRQHandler            /* USB IRQ */
+    .long   USB_FIQHandler            /* USB FIQ */
+    .long   ADC_IRQHandler            /* A/D Converter */
+    .long   WDT_IRQHandler            /* Watchdog timer */
+    .long   BOD_IRQHandler            /* Brown Out Detect */
+    .long   FMC_IRQHandler            /* IP2111 Flash Memory Controller */
+    .long   Reserved5_IRQHandler	       /* Reserved */
+    .long   Reserved6_IRQHandler       /* Reserved */
+    .long   USBWakeup_IRQHandler      /* USB wake up */
+    .long   Reserved7_IRQHandler       /* Reserved */
 
 
 #if defined(MBED_BOOTLOADER)
-	;; 48 vector entries. We pad to 128 to fill the 0x0 - 0x1FF REMAP address space
+	/* 48 vector entries. We pad to 128 to fill the 0x0 - 0x1FF REMAP address space */
 
-    ;; 8 word filler
+    /* 8 word filler */
     .macro filler
-    .long   0xFFFFFFFF                ; Datafill
-    .long   0xFFFFFFFF                ; Datafill
-    .long   0xFFFFFFFF                ; Datafill
-    .long   0xFFFFFFFF                ; Datafill
-    .long   0xFFFFFFFF                ; Datafill
-    .long   0xFFFFFFFF                ; Datafill
-    .long   0xFFFFFFFF                ; Datafill
-    .long   0xFFFFFFFF                ; Datafill
-@     .long   0xFFFFFFFF                ; Datafill
-@     .long   0xFFFFFFFF                ; Datafill
+    .long   0xFFFFFFFF                /* Datafill */
+    .long   0xFFFFFFFF                /* Datafill */
+    .long   0xFFFFFFFF                /* Datafill */
+    .long   0xFFFFFFFF                /* Datafill */
+    .long   0xFFFFFFFF                /* Datafill */
+    .long   0xFFFFFFFF                /* Datafill */
+    .long   0xFFFFFFFF                /* Datafill */
+    .long   0xFFFFFFFF                /* Datafill */
+@     .long   0xFFFFFFFF                /* Datafill */
+@     .long   0xFFFFFFFF                /* Datafill */
     .endm
 
-    ; . = (16 + 32) words = 192 bytes
+    /* . = (16 + 32) words = 192 bytes */
 
-    ; 16 * 8 words = 512 bytes
+    /* 16 * 8 words = 512 bytes */
     filler
     filler
     filler
@@ -116,25 +116,25 @@ __isr_vector:
     filler
     filler
     filler
-    ; . = 192 + 512 = 704
-    filler ; . = 736
+    /* . = 192 + 512 = 704 */
+    filler /* . = 736 */
 
-    .long   0xFFFFFFFF                ; Datafill
-    .long   0xFFFFFFFF                ; Datafill
-    .long   0xFFFFFFFF                ; Datafill
-    .long   0xFFFFFFFF                ; Datafill
-    .long   0xFFFFFFFF                ; Datafill
-    .long   0xFFFFFFFF                ; Datafill
-    .long   0xFFFFFFFF                ; Datafill
+    .long   0xFFFFFFFF                /* Datafill */
+    .long   0xFFFFFFFF                /* Datafill */
+    .long   0xFFFFFFFF                /* Datafill */
+    .long   0xFFFFFFFF                /* Datafill */
+    .long   0xFFFFFFFF                /* Datafill */
+    .long   0xFFFFFFFF                /* Datafill */
+    .long   0xFFFFFFFF                /* Datafill */
 
-    ; . = 764 = 0x2fc
+    /* . = 764 = 0x2fc */
 
 #endif // MBED_BOOTLOADER
 
 #if !defined(NO_CRP)
 @                 AREA    |.ARM.__at_0x02FC|, CODE, READONLY
 @     .section .isr_vector, "a"
-CRP_Key         .long     0xFFFFFFFF
+CRP_Key:         .long     0xFFFFFFFF
 #endif
 
     .size    __isr_vector, . - __isr_vector
@@ -257,48 +257,12 @@ HardFault_Handler:
 
     .align 1
     .thumb_func
-    .weak MemManage_Handler
-    .type MemManage_Handler, %function
-MemManage_Handler:
-    ldr   r0,=MemManage_Handler
-    bx    r0
-    .size MemManage_Handler, . - MemManage_Handler
-
-    .align 1
-    .thumb_func
-    .weak BusFault_Handler
-    .type BusFault_Handler, %function
-BusFault_Handler:
-    ldr   r0,=BusFault_Handler
-    bx    r0
-    .size BusFault_Handler, . - BusFault_Handler
-
-    .align 1
-    .thumb_func
-    .weak UsageFault_Handler
-    .type UsageFault_Handler, %function
-UsageFault_Handler:
-    ldr   r0,=UsageFault_Handler
-    bx    r0
-    .size UsageFault_Handler, . - UsageFault_Handler
-
-    .align 1
-    .thumb_func
     .weak SVC_Handler
     .type SVC_Handler, %function
 SVC_Handler:
     ldr   r0,=SVC_Handler
     bx    r0
     .size SVC_Handler, . - SVC_Handler
-
-    .align 1
-    .thumb_func
-    .weak DebugMon_Handler
-    .type DebugMon_Handler, %function
-DebugMon_Handler:
-    ldr   r0,=DebugMon_Handler
-    bx    r0
-    .size DebugMon_Handler, . - DebugMon_Handler
 
     .align 1
     .thumb_func
@@ -327,51 +291,37 @@ SysTick_Handler:
     .endm
 
 /* Exception Handlers */
-    def_irq_handler    DMA0_IRQHandler
-    def_irq_handler    DMA1_IRQHandler
-    def_irq_handler    DMA2_IRQHandler
-    def_irq_handler    DMA3_IRQHandler
-    def_irq_handler    DMA_Error_IRQHandler
-    def_irq_handler    Reserved21_IRQHandler
-    def_irq_handler    FTFL_IRQHandler
-    def_irq_handler    Read_Collision_IRQHandler
-    def_irq_handler    LVD_LVW_IRQHandler
-    def_irq_handler    LLW_IRQHandler
-    def_irq_handler    Watchdog_IRQHandler
-    def_irq_handler    I2C0_IRQHandler
-    def_irq_handler    SPI0_IRQHandler
-    def_irq_handler    I2S0_Tx_IRQHandler
-    def_irq_handler    I2S0_Rx_IRQHandler
-    def_irq_handler    UART0_LON_IRQHandler
-    def_irq_handler    UART0_RX_TX_IRQHandler
-    def_irq_handler    UART0_ERR_IRQHandler
-    def_irq_handler    UART1_RX_TX_IRQHandler
-    def_irq_handler    UART1_ERR_IRQHandler
-    def_irq_handler    UART2_RX_TX_IRQHandler
-    def_irq_handler    UART2_ERR_IRQHandler
-    def_irq_handler    ADC0_IRQHandler
-    def_irq_handler    CMP0_IRQHandler
-    def_irq_handler    CMP1_IRQHandler
-    def_irq_handler    FTM0_IRQHandler
-    def_irq_handler    FTM1_IRQHandler
-    def_irq_handler    CMT_IRQHandler
-    def_irq_handler    RTC_IRQHandler
-    def_irq_handler    RTC_Seconds_IRQHandler
-    def_irq_handler    PIT0_IRQHandler
-    def_irq_handler    PIT1_IRQHandler
-    def_irq_handler    PIT2_IRQHandler
-    def_irq_handler    PIT3_IRQHandler
-    def_irq_handler    PDB0_IRQHandler
-    def_irq_handler    USB0_IRQHandler
-    def_irq_handler    USBDCD_IRQHandler
-    def_irq_handler    TSI0_IRQHandler
-    def_irq_handler    MCG_IRQHandler
-    def_irq_handler    LPTimer_IRQHandler
-    def_irq_handler    PORTA_IRQHandler
-    def_irq_handler    PORTB_IRQHandler
-    def_irq_handler    PORTC_IRQHandler
-    def_irq_handler    PORTD_IRQHandler
-    def_irq_handler    PORTE_IRQHandler
-    def_irq_handler    SWI_IRQHandler
+    def_irq_handler    FLEX_INT0_IRQHandler      /* All GPIO pin can be routed to FLEX_INTx */
+    def_irq_handler    FLEX_INT1_IRQHandler
+    def_irq_handler    FLEX_INT2_IRQHandler
+    def_irq_handler    FLEX_INT3_IRQHandler
+    def_irq_handler    FLEX_INT4_IRQHandler
+    def_irq_handler    FLEX_INT5_IRQHandler
+    def_irq_handler    FLEX_INT6_IRQHandler
+    def_irq_handler    FLEX_INT7_IRQHandler
+    def_irq_handler    GINT0_IRQHandler
+    def_irq_handler    GINT1_IRQHandler          /* PIO0 (0:7) */
+    def_irq_handler    Reserved1_IRQHandler		   /* Reserved */
+    def_irq_handler    Reserved2_IRQHandler
+    def_irq_handler    Reserved3_IRQHandler
+    def_irq_handler    Reserved4_IRQHandler
+    def_irq_handler    SSP1_IRQHandler           /* SSP1 */
+    def_irq_handler    I2C_IRQHandler            /* I2C */
+    def_irq_handler    TIMER16_0_IRQHandler      /* 16-bit Timer0 */
+    def_irq_handler    TIMER16_1_IRQHandler      /* 16-bit Timer1 */
+    def_irq_handler    TIMER32_0_IRQHandler      /* 32-bit Timer0 */
+    def_irq_handler    TIMER32_1_IRQHandler      /* 32-bit Timer1 */
+    def_irq_handler    SSP0_IRQHandler           /* SSP0 */
+    def_irq_handler    UART_IRQHandler           /* UART */
+    def_irq_handler    USB_IRQHandler            /* USB IRQ */
+    def_irq_handler    USB_FIQHandler            /* USB FIQ */
+    def_irq_handler    ADC_IRQHandler            /* A/D Converter */
+    def_irq_handler    WDT_IRQHandler            /* Watchdog timer */
+    def_irq_handler    BOD_IRQHandler            /* Brown Out Detect */
+    def_irq_handler    FMC_IRQHandler            /* IP2111 Flash Memory Controller */
+    def_irq_handler    Reserved5_IRQHandler	       /* Reserved */
+    def_irq_handler    Reserved6_IRQHandler       /* Reserved */
+    def_irq_handler    USBWakeup_IRQHandler      /* USB wake up */
+    def_irq_handler    Reserved7_IRQHandler       /* Reserved */
 
     .end
