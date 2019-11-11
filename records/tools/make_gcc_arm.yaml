@@ -24,14 +24,16 @@ tool_specific:
                 - -ffreestanding
                 - -Wa,-adln=$@.lst
                 - -fverbose-asm
+                - -flto
             ld_flags:
+                - -Os
                 - -Wl,--no-wchar-size-warning
                 - --specs=nano.specs
                 - --specs=nosys.specs
                 - -Wl,--gc-sections
-                - -u _printf_float
                 - -Wl,--defsym=__stack_size__=0x200
                 - -Wl,--defsym=__heap_size__=0x100
+                - -flto
             pre_build_script:
                 - tools/pre_build_script.sh
             post_build_script:
