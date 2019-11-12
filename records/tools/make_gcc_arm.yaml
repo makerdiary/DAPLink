@@ -24,6 +24,7 @@ tool_specific:
                 - -ffreestanding
                 - -Wa,-adln=$@.lst
                 - -fverbose-asm
+                - -mno-unaligned-access
                 - -flto
             ld_flags:
                 - -Os
