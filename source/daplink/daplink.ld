@@ -35,6 +35,8 @@ MEMORY
   m_interrupts          (RX)  : ORIGIN = DAPLINK_ROM_APP_START, LENGTH = 0x00000400
   m_text                (RX)  : ORIGIN = DAPLINK_ROM_APP_START + 0x00000410, LENGTH = DAPLINK_ROM_APP_SIZE - 0x410
   m_data                (RW)  : ORIGIN = DAPLINK_RAM_APP_START, LENGTH = DAPLINK_RAM_APP_SIZE
+  m_cfgram              (RW)  : ORIGIN = DAPLINK_RAM_SHARED_START, LENGTH = DAPLINK_RAM_SHARED_SIZE
+  m_cfgrom              (RW)  : ORIGIN = DAPLINK_ROM_CONFIG_USER_START, LENGTH = DAPLINK_ROM_CONFIG_USER_SIZE
 #if defined(DAPLINK_LD_MEMORY_INC)
   #include DAPLINK_LD_MEMORY_INC
 #endif
@@ -160,6 +162,11 @@ SECTIONS
   text_end = ORIGIN(m_text) + LENGTH(m_text);
   ASSERT(__DATA_END <= text_end, "region m_text overflowed with text and data")
 
+  .cfgrom (NOLOAD) :
+  {
+    *(cfgrom)
+  } > m_cfgrom
+
   /* Uninitialized data section */
   .bss :
   {
@@ -191,6 +198,11 @@ SECTIONS
     . = ALIGN(8);
     . += STACK_SIZE;
   } > m_data
+
+  .cfgram (NOLOAD) :
+  {
+    *(cfgram)
+  } > m_cfgram
 
 #if defined(DAPLINK_LD_LATE_INC)
   #include DAPLINK_LD_LATE_INC
