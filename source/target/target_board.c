@@ -26,10 +26,10 @@
 // Default empty board info.
 __WEAK __ALIGNED(4)
 const board_info_t g_board_info = {
-		.infoVersion = 0x1234,
+		.info_version = kBoardInfoVersion,
 		.board_id = "0000",
-		.daplink_url_name =       "MBED    HTM",
-		.daplink_drive_name = 		"DAPLINK    ",
+		.daplink_url_name = "MBED    HTM",
+		.daplink_drive_name = "DAPLINK    ",
 		.daplink_target_url = "https://mbed.org/device/?code=@U?version=@V?target_id=@T",
 };
 
