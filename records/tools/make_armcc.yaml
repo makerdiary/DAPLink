@@ -21,4 +21,16 @@ tool_specific:
                 - tools/pre_build_script.sh
             post_build_script:
                 - tools/post_build_script.sh
+    uvision:
+        misc:
+            common_flags:
+                - -c
+            c_flags:
+                - -O2
+                - --gnu
+                - --c99
+                - --split_sections
+                - --interleave
+            linker_options:
+                - nostartfiles
 
