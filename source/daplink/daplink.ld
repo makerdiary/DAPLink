@@ -50,7 +50,9 @@ SECTIONS
   {
     . = ALIGN(4);
     KEEP(*(.isr_vector))     /* Startup code */
+    FILL(0xffffffff)
     . = ALIGN(4);
+    . += LENGTH(m_interrupts) - (. - ORIGIN(m_interrupts)); /* pad out to end of m_interrupts */
   } > m_interrupts
 
 #if defined(DAPLINK_LD_EARLY_INC)
