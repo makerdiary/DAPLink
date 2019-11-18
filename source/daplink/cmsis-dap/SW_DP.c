@@ -28,6 +28,10 @@
 #include "DAP_config.h"
 #include "DAP.h"
 
+#if (defined(__GNUC__))
+#pragma GCC push_options
+#pragma GCC optimize("O3")
+#endif
 
 // SW Macros
 
