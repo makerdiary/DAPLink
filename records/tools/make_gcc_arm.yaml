@@ -31,7 +31,7 @@ tool_specific:
                 - --specs=nosys.specs
                 - -Wl,--gc-sections
                 - -Wl,--defsym=__stack_size__=0x200
-                - -Wl,--defsym=__heap_size__=0x100
+                - -Wl,--defsym=__heap_size__=0x0
             pre_build_script:
                 - tools/pre_build_script.sh
             post_build_script:
