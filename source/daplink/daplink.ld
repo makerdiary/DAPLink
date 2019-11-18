@@ -23,6 +23,11 @@
 
 #include "daplink_addr.h"
 
+// Set text start offset to immediately after interrupts by default.
+#if !defined(DAPLINK_ROM_APP_START_TEXT_OFFSET)
+#define DAPLINK_ROM_APP_START_TEXT_OFFSET (0x400)
+#endif
+
 /* Entry Point */
 ENTRY(Reset_Handler)
 
@@ -33,7 +38,8 @@ STACK_SIZE = DEFINED(__stack_size__) ? __stack_size__ : 0x0400;
 MEMORY
 {
   m_interrupts          (RX)  : ORIGIN = DAPLINK_ROM_APP_START, LENGTH = 0x00000400
-  m_text                (RX)  : ORIGIN = DAPLINK_ROM_APP_START + 0x00000410, LENGTH = DAPLINK_ROM_APP_SIZE - 0x410
+  m_text                (RX)  : ORIGIN = DAPLINK_ROM_APP_START + DAPLINK_ROM_APP_START_TEXT_OFFSET,
+                                LENGTH = DAPLINK_ROM_APP_SIZE - DAPLINK_ROM_APP_START_TEXT_OFFSET
   m_data                (RW)  : ORIGIN = DAPLINK_RAM_APP_START, LENGTH = DAPLINK_RAM_APP_SIZE
   m_cfgram              (RW)  : ORIGIN = DAPLINK_RAM_SHARED_START, LENGTH = DAPLINK_RAM_SHARED_SIZE
   m_cfgrom              (RW)  : ORIGIN = DAPLINK_ROM_CONFIG_USER_START, LENGTH = DAPLINK_ROM_CONFIG_USER_SIZE

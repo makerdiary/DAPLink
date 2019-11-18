@@ -44,6 +44,8 @@
 #define DAPLINK_ROM_CONFIG_USER_START   0x0003f000
 #define DAPLINK_ROM_CONFIG_USER_SIZE    0x00001000 // 4 kB user config
 
+#define DAPLINK_ROM_APP_START_TEXT_OFFSET 0x410
+
 /* RAM sizes */
 
 #define DAPLINK_RAM_APP_START           0x1fff0000
