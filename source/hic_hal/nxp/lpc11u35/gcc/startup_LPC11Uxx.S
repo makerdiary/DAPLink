@@ -79,63 +79,20 @@ __isr_vector:
     .long   USBWakeup_IRQHandler      /* USB wake up */
     .long   Reserved7_IRQHandler       /* Reserved */
 
-
 #if defined(MBED_BOOTLOADER)
-	/* 48 vector entries. We pad to 128 to fill the 0x0 - 0x1FF REMAP address space */
 
-    /* 8 word filler */
-    .macro filler
-    .long   0xFFFFFFFF                /* Datafill */
-    .long   0xFFFFFFFF                /* Datafill */
-    .long   0xFFFFFFFF                /* Datafill */
-    .long   0xFFFFFFFF                /* Datafill */
-    .long   0xFFFFFFFF                /* Datafill */
-    .long   0xFFFFFFFF                /* Datafill */
-    .long   0xFFFFFFFF                /* Datafill */
-    .long   0xFFFFFFFF                /* Datafill */
-@     .long   0xFFFFFFFF                /* Datafill */
-@     .long   0xFFFFFFFF                /* Datafill */
-    .endm
+// Set the CRP (Code Read Protection) configuration word at address 0x2FC to ensure that
+// CRP is disabled.
+#define CRP_KEY_ADDR (0x000002FC)
+#define CRP_DISABLED (0xFFFFFFFF)
 
-    /* . = (16 + 32) words = 192 bytes */
+1:  // Fill up to CRP config word address.
+	.dcb.l  ((CRP_KEY_ADDR - (1b - __isr_vector)) / 4)
 
-    /* 16 * 8 words = 512 bytes */
-    filler
-    filler
-    filler
-    filler
-    filler
-    filler
-    filler
-    filler
-    filler
-    filler
-    filler
-    filler
-    filler
-    filler
-    filler
-    filler
-    /* . = 192 + 512 = 704 */
-    filler /* . = 736 */
-
-    .long   0xFFFFFFFF                /* Datafill */
-    .long   0xFFFFFFFF                /* Datafill */
-    .long   0xFFFFFFFF                /* Datafill */
-    .long   0xFFFFFFFF                /* Datafill */
-    .long   0xFFFFFFFF                /* Datafill */
-    .long   0xFFFFFFFF                /* Datafill */
-    .long   0xFFFFFFFF                /* Datafill */
-
-    /* . = 764 = 0x2fc */
+CRP_Key:
+    .long   CRP_DISABLED
 
 #endif // MBED_BOOTLOADER
-
-#if !defined(NO_CRP)
-@                 AREA    |.ARM.__at_0x02FC|, CODE, READONLY
-@     .section .isr_vector, "a"
-CRP_Key:         .long     0xFFFFFFFF
-#endif
 
     .size    __isr_vector, . - __isr_vector
 
