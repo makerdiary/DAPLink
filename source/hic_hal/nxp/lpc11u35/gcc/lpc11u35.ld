@@ -37,6 +37,8 @@ MEMORY
   m_cfgrom              (RW)  : ORIGIN = DAPLINK_ROM_CONFIG_USER_START, LENGTH = DAPLINK_ROM_CONFIG_USER_SIZE
   m_data                (RW)  : ORIGIN = DAPLINK_RAM_APP_START, LENGTH = DAPLINK_RAM_APP_SIZE
   m_cfgram              (RW)  : ORIGIN = DAPLINK_RAM_SHARED_START, LENGTH = DAPLINK_RAM_SHARED_SIZE
+  m_data_2              (RW)  : ORIGIN = DAPLINK_RAM_APP2_START, LENGTH = DAPLINK_RAM_APP2_SIZE
+  m_usb_ram             (RW)  : ORIGIN = DAPLINK_USB_RAM_START, LENGTH = DAPLINK_USB_RAM_SIZE
 }
 
 /* Define output sections */
@@ -163,6 +165,16 @@ SECTIONS
   } > m_cfgrom
 
   /* Uninitialized data section */
+
+  /* build .bss_2 first so we don't have to exclude any sections put in here from .bss */
+  .bss_2 :
+  {
+    . = ALIGN(4);
+    *(.bss.dir_current)
+    *(.bss.mbr)
+    . = ALIGN(4);
+  } > m_data_2
+
   .bss :
   {
     /* This is used by the startup in order to initialize the .bss section */
@@ -186,21 +198,28 @@ SECTIONS
     . += HEAP_SIZE;
     __HeapLimit = .;
     __heap_limit = .; /* Add for _sbrk */
-  } > m_data
+  } > m_data_2
 
   .stack :
   {
     . = ALIGN(8);
     . += STACK_SIZE;
-  } > m_data
+  } > m_data_2
 
   .cfgram (NOLOAD) :
   {
     *(cfgram)
   } > m_cfgram
 
+  .usbram (NOLOAD) :
+  {
+    . = ALIGN(4);
+    *(.usbram)
+    . = ALIGN(4);
+  } > m_usb_ram
+
   /* Initializes stack on the end of block */
-  __StackTop   = ORIGIN(m_data) + LENGTH(m_data);
+  __StackTop   = ORIGIN(m_data_2) + LENGTH(m_data_2);
   __StackLimit = __StackTop - STACK_SIZE;
   PROVIDE(__stack = __StackTop);
 
