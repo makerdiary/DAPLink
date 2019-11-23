@@ -53,6 +53,10 @@ uint16_t get_family_id(void)
 }
 
 // Disable optimization of this function.
+//
+// This is required because for the "no target" builds, the compiler sees g_board_info.target_cfg as
+// NULL and will elide the entire expression. However, the board and target info may be modified
+// using the post processor script, changing what the code sees at runtime.
 NO_OPTIMIZE_PRE
 uint8_t NO_OPTIMIZE_INLINE flash_algo_valid(void)
 {
