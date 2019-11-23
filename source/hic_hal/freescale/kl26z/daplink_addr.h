@@ -82,8 +82,4 @@
 
 #endif
 
-// GCC LD include files
-#define DAPLINK_LD_MEMORY_INC "kl26z_ld_memory.inc"
-#define DAPLINK_LD_EARLY_INC "kl26z_ld_early.inc"
-
 #endif

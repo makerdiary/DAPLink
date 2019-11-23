@@ -89,12 +89,4 @@
 
 #endif
 
-// GCC LD include files
-#define DAPLINK_LD_MEMORY_INC "lpc11u35_ld_memory.inc"
-#define DAPLINK_LD_LATE_INC "lpc11u35_ld_late.inc"
-
-// Move stack and heap to separate RAM.
-#define DAPLINK_STACK_MEM m_data_2
-#define DAPLINK_HEAP_MEM m_data_2
-
 #endif
