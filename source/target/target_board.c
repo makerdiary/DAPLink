@@ -33,30 +33,34 @@ const board_info_t g_board_info = {
 		.daplink_target_url = "https://mbed.org/device/?code=@U?version=@V?target_id=@T",
 };
 
+// Disable optimization of these functions.
+//
+// This is required because for the "no target" builds, the compiler sees g_board_info fields as
+// defined above and will elide entire expressions. However, the board and target info may be
+// modified using the post processor script, changing what the code sees at runtime.
 
-const char * get_board_id(void)
+NO_OPTIMIZE_PRE
+const char * NO_OPTIMIZE_INLINE get_board_id(void)
 {
     if (g_board_info.target_cfg && g_board_info.target_cfg->rt_board_id) {
         return g_board_info.target_cfg->rt_board_id; //flexible board id
-    }else{
+    } else {
         return g_board_info.board_id;
     }
 }
+NO_OPTIMIZE_POST
 
-uint16_t get_family_id(void)
+NO_OPTIMIZE_PRE
+uint16_t NO_OPTIMIZE_INLINE get_family_id(void)
 {
     if (g_board_info.target_cfg && g_board_info.target_cfg->rt_family_id) {
         return g_board_info.target_cfg->rt_family_id; //flexible family id
-    }else{
+    } else {
         return g_board_info.family_id;
     }
 }
+NO_OPTIMIZE_POST
 
-// Disable optimization of this function.
-//
-// This is required because for the "no target" builds, the compiler sees g_board_info.target_cfg as
-// NULL and will elide the entire expression. However, the board and target info may be modified
-// using the post processor script, changing what the code sees at runtime.
 NO_OPTIMIZE_PRE
 uint8_t NO_OPTIMIZE_INLINE flash_algo_valid(void)
 {

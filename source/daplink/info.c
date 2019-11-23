@@ -101,8 +101,7 @@ const char *info_get_unique_id_string_descriptor(void)
 }
 
 //prevent the compiler to optimize board and family id
-NO_OPTIMIZE_PRE
-static void NO_OPTIMIZE_INLINE setup_basics(void)
+static void setup_basics(void)
 {
     uint8_t i = 0, idx = 0;
     uint16_t family_id = get_family_id();
@@ -161,7 +160,6 @@ static void NO_OPTIMIZE_INLINE setup_basics(void)
     string_version[idx++] = '0' + (DAPLINK_VERSION / 1) % 10;
     string_version[idx++] = 0;
 }
-NO_OPTIMIZE_POST
 
 static void setup_unique_id()
 {
