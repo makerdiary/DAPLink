@@ -642,3 +642,7 @@ projects:
         - *module_if
         - *module_hic_lpc4322
         - records/board/hani_iot.yaml
+    lpc11u35_pitaya_link_if:
+        - *module_if
+        - *module_hic_lpc11u35
+        - records/board/pitaya_link.yaml
