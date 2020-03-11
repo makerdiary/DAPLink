@@ -108,6 +108,11 @@ CRP_Key:
     .type    Reset_Handler, %function
 Reset_Handler:
     cpsid   i               /* Mask interrupts */
+    .equ    SYS_CLK_CTRL, 0x40048080
+    .equ    EN_CLKS, 0x0C00001F
+    ldr     r0, =SYS_CLK_CTRL
+    ldr     r1, =EN_CLKS
+    str     r1, [r0]        /* enable RAM1, RAM2, USB_RAM */
     .equ    VTOR, 0xE000ED08
     ldr     r0, =VTOR
     ldr     r1, =__isr_vector
@@ -129,7 +134,7 @@ Reset_Handler:
     ldr    r2, =__data_start__
     ldr    r3, =__data_end__
 
-#if 1
+#if 0
 /* Here are two copies of loop implemenations. First one favors code size
  * and the second one favors performance. Default uses the first one.
  * Change to "#if 0" to use the second one */
