@@ -74,7 +74,7 @@ typedef struct __attribute__((__packed__)) target_cfg {
     uint8_t pad;
 } target_cfg_t;
 
-extern target_cfg_t target_device;
+extern const target_cfg_t target_device;
 
 
 #ifdef __cplusplus

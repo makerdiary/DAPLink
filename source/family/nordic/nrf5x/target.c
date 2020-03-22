@@ -25,7 +25,7 @@
 #include "flash_blob.c"
 
 // target information
-target_cfg_t target_device = {  // Default is nRF51
+const target_cfg_t target_device = {  // Default is nRF51
     .sectors_info                   = sectors_info,
     .sector_info_length             = (sizeof(sectors_info))/(sizeof(sector_info_t)),
     .flash_regions[0].start         = 0,
@@ -37,7 +37,7 @@ target_cfg_t target_device = {  // Default is nRF51
     .erase_reset                    = 1,
 };
 
-target_cfg_t target_device_nrf52 = {
+const target_cfg_t target_device_nrf52 = {
     .sectors_info                   = sectors_info_nrf52,
     .sector_info_length             = (sizeof(sectors_info_nrf52))/(sizeof(sectors_info_nrf52)),
     .flash_regions[0].start         = 0,
@@ -49,7 +49,7 @@ target_cfg_t target_device_nrf52 = {
     .erase_reset                    = 1,
 };
 
-target_cfg_t target_device_nrf52840 = {
+const target_cfg_t target_device_nrf52840 = {
     .sectors_info                   = sectors_info_nrf52,
     .sector_info_length             = (sizeof(sectors_info_nrf52))/(sizeof(sectors_info_nrf52)),
     .flash_regions[0].start         = 0,
@@ -61,7 +61,7 @@ target_cfg_t target_device_nrf52840 = {
     .erase_reset                    = 1,
 };
 
-target_cfg_t target_device_nrf52840_256 = {
+const target_cfg_t target_device_nrf52840_256 = {
     .sectors_info                   = sectors_info_nrf52,
     .sector_info_length             = (sizeof(sectors_info_nrf52))/(sizeof(sectors_info_nrf52)),
     .flash_regions[0].start         = 0,
@@ -73,7 +73,7 @@ target_cfg_t target_device_nrf52840_256 = {
     .erase_reset                    = 1,
 };
 
-target_cfg_t target_device_nrf52_64 = {
+const target_cfg_t target_device_nrf52_64 = {
     .sectors_info                   = sectors_info_nrf52,
     .sector_info_length             = (sizeof(sectors_info_nrf52))/(sizeof(sectors_info_nrf52)),
     .flash_regions[0].start         = 0,
