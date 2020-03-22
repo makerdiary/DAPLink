@@ -637,3 +637,15 @@ projects:
         - *module_if
         - *module_hic_lpc11u35
         - records/board/wio_emw3166.yaml
+    lpc11u35_pitaya_link_if:
+        - *module_if
+        - *module_hic_lpc11u35
+        - records/board/pitaya_link.yaml
+    lpc11u35_pitaya_link_if_bm:
+        - *module_if
+        - *module_hic_lpc11u35_bm
+        - records/board/pitaya_link.yaml
+    lpc11u35_m2dock_if:
+        - *module_if
+        - *module_hic_lpc11u35_bm
+        - records/board/m2dock.yaml
