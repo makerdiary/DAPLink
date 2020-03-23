@@ -29,7 +29,7 @@ const board_info_t g_board_info = {
     .board_id = "1028",
     .family_id = kNordic_Nrf52_FamilyID,
     .daplink_url_name = "PRODINFOHTM",
-    .daplink_drive_name = "M.2 DOCK",
-    .daplink_target_url = "https://wiki.makerdiary.com/m2dock/",
+    .daplink_drive_name = "M2-DOCK",
+    .daplink_target_url = "https://wiki.makerdiary.com/m2-dock/",
     .target_cfg = &target_device_nrf52840_256,
 };
