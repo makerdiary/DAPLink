@@ -25,6 +25,12 @@
 #include "circ_buf.h"
 #include "settings.h" // for config_get_overflow_detect
 
+#ifdef ENABLE_VOLTMETER
+#include "voltmeter.h"
+
+static uint8_t debug_count = 0;
+#endif
+
 static uint32_t baudrate;
 static uint32_t dll;
 static uint32_t tx_in_progress;
@@ -94,11 +100,37 @@ int32_t uart_set_configuration(UART_Configuration *config)
     uint8_t DivAddVal = 0;
     uint8_t MulVal = 1;
     uint8_t mv, data_bits = 8, parity, stop_bits = 0;
+
     // disable interrupt
     NVIC_DisableIRQ(UART_IRQn);
     // reset uart
     reset();
+
+#ifdef ENABLE_VOLTMETER
+    {
+        static bool voltmeter_started = false;
+        
+        if (voltmeter_started && baudrate != config->Baudrate) {
+            voltmeter_stop();
+            voltmeter_started = false;
+        }
+
+        if (config->Baudrate >= 4000000) {
+            baudrate = config->Baudrate;
+
+            if (!voltmeter_started) {
+                voltmeter_start(baudrate);
+
+                voltmeter_started = true;
+            }
+            
+            return 1;
+        }
+    }
+#endif
+
     baudrate = config->Baudrate;
+
     // Compute baud rate dividers
     mv = 15;
     dll = util_div_round_down(SystemCoreClock, 16 * config->Baudrate);
@@ -269,6 +301,12 @@ int32_t uart_write_data(uint8_t *data, uint16_t size)
 {
     uint32_t cnt;
 
+#ifdef ENABLE_VOLTMETER
+    if (baudrate >= 4000000) {
+        return circ_buf_write(&read_buffer, data, size);
+    }
+#endif
+
     cnt = circ_buf_write(&write_buffer, data, size);
 
     // enable THRE interrupt
@@ -321,19 +359,25 @@ void UART_IRQHandler(void)
             uint8_t data;
             
             data = LPC_USART->RBR;
-            free = circ_buf_count_free(&read_buffer);
-            if (free > RX_OVRF_MSG_SIZE) {
-                circ_buf_push(&read_buffer, data);
-            } else if (config_get_overflow_detect()) {
-                if (RX_OVRF_MSG_SIZE == free) {
-                    circ_buf_write(&read_buffer, (uint8_t*)RX_OVRF_MSG, RX_OVRF_MSG_SIZE);
+
+#ifdef ENABLE_VOLTMETER
+            if (baudrate < 4000000)
+#endif
+            {
+                free = circ_buf_count_free(&read_buffer);
+                if (free > RX_OVRF_MSG_SIZE) {
+                    circ_buf_push(&read_buffer, data);
+                } else if (config_get_overflow_detect()) {
+                    if (RX_OVRF_MSG_SIZE == free) {
+                        circ_buf_write(&read_buffer, (uint8_t*)RX_OVRF_MSG, RX_OVRF_MSG_SIZE);
+                    } else {
+                        // Drop newest
+                    }
                 } else {
-                    // Drop newest
+                    // Drop oldest
+                    circ_buf_pop(&read_buffer);
+                    circ_buf_push(&read_buffer, data);
                 }
-            } else {
-                // Drop oldest
-                circ_buf_pop(&read_buffer);
-                circ_buf_push(&read_buffer, data);
             }
         }
     }
@@ -371,3 +415,19 @@ static int32_t reset(void)
 
     return 1;
 }
+
+#ifdef ENABLE_VOLTMETER
+void voltmeter_isr(uint8_t channel, uint16_t value)
+{
+    if (baudrate < 4000000) {
+        return;
+    }
+
+    uint32_t free = circ_buf_count_free(&read_buffer);
+    if (free >= 5) {
+        static char buf[5];
+        int len = voltmeter_convert(buf, 5, value | channel);
+        circ_buf_write(&read_buffer, buf, len);
+    }
+}
+#endif
