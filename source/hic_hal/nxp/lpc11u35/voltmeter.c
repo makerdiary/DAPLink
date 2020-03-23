@@ -33,10 +33,10 @@ void voltmeter_start(uint32_t options)
     uint8_t range = current_range;
     uint32_t period = voltmeter_period;
 
-    if (options & 0x80000000) {
+    if (options & 0x40000000) {
         // uint8_t channels = (uint8_t)options;
-        range = (options >> 28) & 0x7;
-        period = (options >> 8) & 0xFFFFF;
+        range = (options >> 8) & 0xF;
+        period = ((options >> 16) & 0x3FF) * 1000;
     }
     range_init();
     range_set(range);
@@ -61,22 +61,20 @@ void voltmeter_set_period(uint32_t us)
 
 int voltmeter_convert(char *buf, int size, uint16_t value)
 {
-    int len = 0;
+    const char *hex = "0123456789ABCDEF";
     if (size < 5)
     {
         return 0;
     }
 
-    do
-    {
-        uint8_t n = value % 16;
-        buf[len++] = n < 10 ? ('0' + n) : ('A' + n - 10);
-        value /= 16;
-    } while (value > 0);
+    buf[0] = hex[value >> 12];
+    buf[1] = hex[(value >> 8) & 0xF];
+    buf[2] = hex[(value >> 4) & 0xF];
+    buf[3] = hex[value & 0xF];
 
-    buf[len++] = '\n';
+    buf[4] = '\n';
 
-    return len;
+    return 5;
 }
 
 void ADC_IRQHandler(void)
