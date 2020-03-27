@@ -28,7 +28,7 @@
 #ifdef ENABLE_VOLTMETER
 #include "voltmeter.h"
 
-static uint8_t debug_count = 0;
+static bool voltmeter_paused = false;
 #endif
 
 static uint32_t baudrate;
@@ -303,7 +303,28 @@ int32_t uart_write_data(uint8_t *data, uint16_t size)
 
 #ifdef ENABLE_VOLTMETER
     if (baudrate >= 4000000) {
-        return circ_buf_write(&read_buffer, data, size);
+        for (int i=0; i<size; i++) {
+            switch ((char)data[i]) {
+            case 'g':
+                voltmeter_paused = false;
+                break;
+            case 's':
+                voltmeter_paused = true;
+                break;
+            case ' ':
+                voltmeter_paused = !voltmeter_paused;
+                break;
+            case '0':
+                voltmeter_set_amp(0);
+                break;
+            case '1':
+                voltmeter_set_amp(1);
+                break;
+            default:
+                break;
+            }
+        }
+        return size;
     }
 #endif
 
@@ -417,17 +438,66 @@ static int32_t reset(void)
 }
 
 #ifdef ENABLE_VOLTMETER
-void voltmeter_isr(uint8_t channel, uint16_t value)
+
+
+static int convert(char *buf, uint16_t v, uint16_t i)
 {
-    if (baudrate < 4000000) {
+    const char *hex = "0123456789ABCDEF";
+
+    buf[0] = hex[v >> 12];
+    buf[1] = hex[(v >> 8) & 0xF];
+    buf[2] = hex[(v >> 4) & 0xF];
+    buf[3] = hex[v & 0xF];
+
+    buf[4] = ',';
+
+    buf[5] = hex[i >> 12];
+    buf[6] = hex[(i >> 8) & 0xF];
+    buf[7] = hex[(i >> 4) & 0xF];
+    buf[8] = hex[i & 0xF];
+
+    buf[9] = '\r';
+    buf[10] = '\n';
+
+    return 11;
+}
+
+void voltmeter_isr(uint16_t ch6, uint16_t ch7)
+{
+    static uint16_t samples = 0;
+    static uint32_t sum6 = 0;
+    static uint32_t sum7 = 0;
+
+    if (voltmeter_paused) {
+        samples = 0;
+        sum6 = 0;
+        sum7 = 0;
         return;
     }
 
     uint32_t free = circ_buf_count_free(&read_buffer);
-    if (free >= 5) {
-        static char buf[5];
-        int len = voltmeter_convert(buf, 5, value | channel);
-        circ_buf_write(&read_buffer, buf, len);
+    if (baudrate & 0x40000000) {
+        samples++;
+        if (free >= 4) {
+            if (samples > 1) {
+                ch6 = (sum6 + ch6) / samples;
+                ch7 = (sum7 + ch7) / samples;
+                sum6 = 0;
+                sum7 = 0;
+            }
+            uint32_t data = ((uint32_t)(ch7 & 0xFFC0) << 16) | ((uint32_t)(ch6 & 0xFFC0) << 6) | (samples);
+            circ_buf_write(&read_buffer, (uint8_t *)&data, 4);
+            samples = 0;
+        } else {
+            sum6 += ch6;
+            sum7 += ch7;
+        }
+    } else {
+        if (free >= 11) {
+            static char buf[11];
+            convert(buf, ch6, ch7);
+            circ_buf_write(&read_buffer, buf, sizeof(buf));
+        }
     }
 }
 #endif

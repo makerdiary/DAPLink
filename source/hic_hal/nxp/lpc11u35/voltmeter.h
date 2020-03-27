@@ -6,7 +6,7 @@
 
 extern void voltmeter_start(uint32_t options);
 extern void voltmeter_stop(void);
-extern void voltmeter_set_period(uint32_t us);
-extern int  voltmeter_convert(char *buf, int size, uint16_t value);
+extern void voltmeter_set_amp(uint8_t amp);
+// extern void voltmeter_set_period(uint32_t us);
 
 #endif // __VOLTMETER_H__

@@ -7,86 +7,65 @@
 
 #define ADC_DONE (0x80000000)
 #define ADC_CHANNELS (8)
-#define ADC_CLK (4200000) /* about 4.2MHz */
-// #define ADC_CLK (10000) /* about 10KHz */
 
-#define RANGE_PORT 1
-#define RANGE_PIN 15
+// max = 4.5 MHz
+// If PCLK is 48 MHz, max = 48 / 11 (about 4.36 MHz)
+#define ADC_CLK (4360000)
 
-volatile uint8_t current_range = 0;        // current measurement range
-volatile uint32_t voltmeter_period = 100000; // us
+#define AMP_PORT 1
+#define AMP_PIN 15
 
 static void timer_init(void);
 static void timer_fini(void);
 static void timer_set_period(uint32_t us);
-static void adc_init(void);
+static void adc_init(uint8_t div);
 static void adc_fini(void);
-static void range_init(void);
-static void range_set(uint8_t range);
+static void amp_init(void);
+static void amp_set(uint8_t amp);
 
-__WEAK void voltmeter_isr(uint8_t channel, uint16_t value)
+__WEAK void voltmeter_isr(uint16_t ch6, uint16_t ch7)
 {
 }
 
 void voltmeter_start(uint32_t options)
 {
-    uint8_t range = current_range;
-    uint32_t period = voltmeter_period;
+    uint8_t amp = 0;
+    uint8_t div = 12;
 
     if (options & 0x40000000) {
-        // uint8_t channels = (uint8_t)options;
-        range = (options >> 8) & 0xF;
-        period = ((options >> 16) & 0x3FF) * 1000;
+        amp = (options >> 8) & 0xFF;
+        div = (options >> 16) & 0xFF;
     }
-    range_init();
-    range_set(range);
+    amp_init();
+    amp_set(amp);
 
-    adc_init();
-    timer_init();
-    timer_set_period(period);
+    adc_init(div);
+    // timer_init();
+    // timer_set_period(voltmeter_period);
 }
 
 void voltmeter_stop()
 {
-    timer_fini();
+    // timer_fini();
     adc_fini();
+}
+
+void voltmeter_set_amp(uint8_t amp)
+{
+    amp_set(amp);
 }
 
 void voltmeter_set_period(uint32_t us)
 {
     timer_set_period(us);
-
-    voltmeter_period = us;
-}
-
-int voltmeter_convert(char *buf, int size, uint16_t value)
-{
-    const char *hex = "0123456789ABCDEF";
-    if (size < 5)
-    {
-        return 0;
-    }
-
-    buf[0] = hex[value >> 12];
-    buf[1] = hex[(value >> 8) & 0xF];
-    buf[2] = hex[(value >> 4) & 0xF];
-    buf[3] = hex[value & 0xF];
-
-    buf[4] = '\n';
-
-    return 5;
 }
 
 void ADC_IRQHandler(void)
 {
-    uint32_t data = LPC_ADC->DR[6];
-    uint16_t value = (uint16_t)data;
-    uint8_t channel = (data >> 24) & 0x7;
-
-    voltmeter_isr(channel, value);
+    voltmeter_isr(LPC_ADC->DR[6], LPC_ADC->DR[7]);
 }
 
-static void adc_init(void)
+static void adc_init(uint8_t div)
 {
     /* Disable Power down bit to the ADC block. */
     LPC_SYSCON->PDRUNCFG &= ~(0x1 << 4);
@@ -115,37 +94,35 @@ static void adc_init(void)
     // LPC_IOCON->SWDIO_PIO0_15 |= 0x02;
 
     /* P0.16 = ADC5 */
-    // LPC_IOCON->PIO0_16       &= ~0x9F;
-    // LPC_IOCON->PIO0_16       |= 0x01;
+    // LPC_IOCON->PIO0_16 &= ~0x9F;
+    // LPC_IOCON->PIO0_16 |= 0x01;
 
     /* P0.22 = ADC6 */
     LPC_IOCON->PIO0_22 &= ~0x9F;
     LPC_IOCON->PIO0_22 |= 0x01;
 
     /* P0.23 = ADC7 */
-    // LPC_IOCON->PIO0_23       &= ~0x9F;
-    // LPC_IOCON->PIO0_23       |= 0x01;
+    LPC_IOCON->PIO0_23 &= ~0x9F;
+    LPC_IOCON->PIO0_23 |= 0x01;
 
     SystemCoreClockUpdate();
 
     /* Setup the ADC clock, conversion mode, etc. */
-    LPC_ADC->CR = (1 << 6) |                               // ADC6
-                  ((SystemCoreClock / ADC_CLK - 1) << 8) | // CLKDIV = Fpclk / Fadc - 1
-                  (0 << 16) |                              // BURST = 0, no BURST, software controlled
-                  (0 << 19) |                              // 10 bits (11 clocks)
-                  (4 << 24) |                              // ADC convertion started by CT32B0
-                  (0 << 27);                               // EDGE = 0 (CAP/MAT rising edge, trigger A/D conversion)
-
-
     // LPC_ADC->CR = (1 << 6) |                               // ADC6
     //               ((SystemCoreClock / ADC_CLK - 1) << 8) | // CLKDIV = Fpclk / Fadc - 1
-    //               (1 << 16) |                              // BURST = 1
+    //               (0 << 16) |                              // BURST = 0, no BURST, software controlled
     //               (0 << 19) |                              // 10 bits (11 clocks)
-    //               (0 << 24) |                              // ADC convertion started
+    //               (4 << 24) |                              // ADC convertion started by CT32B0
     //               (0 << 27);                               // EDGE = 0 (CAP/MAT rising edge, trigger A/D conversion)
 
+
+    LPC_ADC->CR = (1 << 6) | (1 << 7) |                    // ADC6
+                  ((div - 1) << 8) |                       // CLKDIV = Fpclk / Fadc - 1
+                  (1 << 16) |                              // BURST = 1
+                  (0 << 19);                               // 10 bits (11 clocks)
+
     NVIC_EnableIRQ(ADC_IRQn);
-    LPC_ADC->INTEN = 1 << 6; /* Enable ADC6 interrupt */
+    LPC_ADC->INTEN = (1 << 7);   // Enable ADC7 interrupt
 }
 
 static void adc_fini()
@@ -182,7 +159,7 @@ static void timer_init()
     LPC_CT32B0->MCR = 1 << 10;
 
     SystemCoreClockUpdate();
-    ticks = (uint32_t)(((uint64_t)SystemCoreClock * (uint64_t)voltmeter_period) / (uint64_t)1000000);
+    ticks = (uint32_t)(((uint64_t)SystemCoreClock * (uint64_t)100000) / (uint64_t)1000000);
     LPC_CT32B0->MR3 = ticks;
 
     LPC_CT32B0->MR0 = LPC_CT32B0->MR3 >> 1;
@@ -206,26 +183,22 @@ static void timer_fini()
     LPC_SYSCON->SYSAHBCLKCTRL &= ~(1 << 9);
 }
 
-static void range_init()
+static void amp_init()
 {
     // enable clock for GPIO
     LPC_SYSCON->SYSAHBCLKCTRL |= (1UL << 6);
 
     LPC_IOCON->PIO1_15 &= ~0x9F;
 
-    LPC_GPIO->DIR[RANGE_PORT] |= (1 << RANGE_PIN);
+    LPC_GPIO->DIR[AMP_PORT] |= (1 << AMP_PIN);
 }
 
-static void range_set(uint8_t range)
+static void amp_set(uint8_t amp)
 {
-    current_range = range;
-    if (range)
-    {
-        LPC_GPIO->CLR[RANGE_PORT] |= (1 << RANGE_PIN);
-    }
-    else
-    {
-        LPC_GPIO->SET[RANGE_PORT] |= (1 << RANGE_PIN);
+    if (amp) {
+        LPC_GPIO->SET[AMP_PORT] |= (1 << AMP_PIN);
+    } else {
+        LPC_GPIO->CLR[AMP_PORT] |= (1 << AMP_PIN);
     }
 }
 
