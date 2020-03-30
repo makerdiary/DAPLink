@@ -29,7 +29,13 @@
 #endif
 #include "target_family.h"
 
-UART_Configuration UART_Config;
+UART_Configuration UART_Config = {
+    .Baudrate = 115200,
+    .DataBits = UART_DATA_BITS_8,
+    .Parity = UART_PARITY_NONE,
+    .StopBits = UART_STOP_BITS_1,
+    .FlowControl = UART_FLOW_CONTROL_NONE
+};
 
 /** @brief  Vitual COM Port initialization
  *

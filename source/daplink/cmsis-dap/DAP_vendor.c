@@ -90,7 +90,7 @@ uint32_t DAP_ProcessVendorCommand(const uint8_t *request, uint8_t *response) {
         memcpy(&baud_rate, request, sizeof(uint32_t));
         cdc_line_coding.dwDTERate = baud_rate;
         USBD_CDC_ACM_PortSetLineCoding(&cdc_line_coding);
-        USBD_CDC_ACM_SendBreak(0);
+        // USBD_CDC_ACM_SendBreak(0);
         *response = 1;
         num += (sizeof(uint32_t) << 16) | 1;
         break;
